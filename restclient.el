@@ -6,6 +6,8 @@
 ;; Maintainer: Pavel Kurnosov <pashky@gmail.com>
 ;; Created: 01 Apr 2012
 ;; Keywords: http
+;; Package-Version: 20200901.1442
+;; Package-Commit: abc307b965bf6720bc466281f2e204cd5ce37dc3
 
 ;; This file is not part of GNU Emacs.
 ;; This file is public domain software. Do what you want.
@@ -21,6 +23,7 @@
 (require 'url)
 (require 'json)
 (require 'outline)
+(require 'outline-minor-faces)
 
 (defgroup restclient nil
   "An interactive HTTP client for Emacs."
@@ -165,7 +168,7 @@
   :group 'restclient
   :type 'integer)
 
-(defconst restclient-comment-separator "#")
+(defconst restclient-comment-separator "*")
 (defconst restclient-comment-start-regexp (concat "^" restclient-comment-separator))
 (defconst restclient-comment-not-regexp (concat "^[^" restclient-comment-separator "]"))
 (defconst restclient-empty-line-regexp "^\\s-*$")
@@ -767,6 +770,8 @@ Optional argument STAY-IN-WINDOW do not move focus to response buffer if t."
   (set (make-local-variable 'comment-column) 48)
 
   (set (make-local-variable 'font-lock-defaults) '(restclient-mode-keywords))
+  (setq imenu-generic-expression
+	    (list (list nil (concat "^\\(?:" outline-regexp "\\).*$") 0)))
   ;; We use outline-mode's method outline-flag-region to hide/show the
   ;; body. As a part of it, it sets 'invisibility text property to
   ;; 'outline. To get ellipsis, we need 'outline to be in
@@ -774,6 +779,8 @@ Optional argument STAY-IN-WINDOW do not move focus to response buffer if t."
   (add-to-invisibility-spec '(outline . t)))
 
 (add-hook 'restclient-mode-hook 'restclient-outline-mode)
+(add-hook 'restclient-mode-hook 'outline-minor-mode)
+(add-hook 'outline-minor-mode-hook 'outline-minor-faces-add-font-lock-keywords)
 
 (provide 'restclient)
 
